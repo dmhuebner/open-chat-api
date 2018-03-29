@@ -16,10 +16,12 @@ const app = express(),
       port = process.env.PORT || 3000;
 
 app.use(logger('combined'));
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-const authRouter =
+const authRouter = require('./routes/authRoutes')();
+
+app.use('/api/openChat', authRouter);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Open Chat API!')
