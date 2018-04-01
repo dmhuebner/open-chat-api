@@ -1,9 +1,12 @@
-const express = require('express')
+const express = require('express'),
       mongoose = require('mongoose'),
       bodyParser = require('body-parser'),
       chalk = require('chalk'),
       debug = require('debug')('app'),
-      logger = require('morgan');
+      logger = require('morgan'),
+      passport = require('passport'),
+      cookieParser = require('cookie-parser'),
+      session = require('express-session');
 
 let db;
 if (process.env.ENV === 'unit-test') {
@@ -16,12 +19,20 @@ const app = express(),
       port = process.env.PORT || 3000;
 
 app.use(logger('combined'));
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(session({
+  secret: 'openChat',
+  resave: false,
+  saveUninitialized: true
+}));
 
-const authRouter = require('./routes/authRoutes')();
+require('./src/config/passport.js')(app);
 
-app.use('/api/openChat', authRouter);
+const authRouter = require('./src/routes/authRoutes')();
+
+app.use('/api/auth', authRouter);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Open Chat API!')
