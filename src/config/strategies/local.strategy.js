@@ -1,6 +1,7 @@
 const passport = require('passport'),
       { Strategy } = require('passport-local'),
-      User = require('../../models/User');
+      User = require('../../models/User'),
+      bcrypt = require('bcryptjs');
 
 module.exports = function localStrategy() {
   const userDef = {
@@ -10,13 +11,17 @@ module.exports = function localStrategy() {
 
   passport.use(new Strategy(userDef, (email, password, done) => {
     User.findOne({email: email}, (error, user) => {
-      if (error) {
+      let passwordsMatch = false;
 
-        return done(error);
-      } else if (!user || user.password !== password) {
-
+      if (!user ) {
         return done(null, false);
       } else {
+        passwordsMatch = bcrypt.compareSync(password, user.password);
+      }
+
+      if (error) {
+        return done(error);
+      } else if (passwordsMatch) {
 
         const returnedUser = {
           _id: user._id,
@@ -26,6 +31,8 @@ module.exports = function localStrategy() {
         };
 
         return done(null, returnedUser);
+      } else {
+        return done(null, false);
       }
     });
   }));
