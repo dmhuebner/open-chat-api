@@ -8,4 +8,4 @@ const userModel = new Schema({
   admin: {type: Boolean, default: false}
 });
 
-module.exports = mongoose.models('User', userModel);
+module.exports = mongoose.model('User', userModel);

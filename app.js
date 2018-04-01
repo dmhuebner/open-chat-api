@@ -30,7 +30,9 @@ app.use(session({
 
 require('./src/config/passport.js')(app);
 
-const authRouter = require('./src/routes/authRoutes')();
+const User = require('./src/models/User');
+
+const authRouter = require('./src/routes/authRoutes')(User);
 
 app.use('/api/auth', authRouter);
 
