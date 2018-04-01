@@ -24,7 +24,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(session({
   secret: 'openChat',
-  resave: false,
+  resave: true,
   saveUninitialized: true
 }));
 
