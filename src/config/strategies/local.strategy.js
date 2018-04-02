@@ -10,7 +10,10 @@ module.exports = function localStrategy() {
   };
 
   passport.use(new Strategy(userDef, (email, password, done) => {
-    User.findOne({email: email}, (error, user) => {
+    // Sanitize email input
+    const sanitizedEmail = email.toLowerCase().replace((/^\s+|\s+$/g), '');
+
+    User.findOne({email: sanitizedEmail}, (error, user) => {
       let passwordsMatch = false;
 
       if (!user ) {

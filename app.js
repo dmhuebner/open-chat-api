@@ -6,7 +6,8 @@ const express = require('express'),
       logger = require('morgan'),
       passport = require('passport'),
       cookieParser = require('cookie-parser'),
-      session = require('express-session');
+      session = require('express-session'),
+      validator = require('express-validator');
 
 let db;
 if (process.env.ENV === 'unit-test') {
@@ -27,6 +28,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true
 }));
+app.use(validator());
 
 require('./src/config/passport.js')(app);
 
