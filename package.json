@@ -4,9 +4,10 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo No tests setup yet",
+    "test": "DEBUG=app gulp test",
     "develop": "DEBUG=app gulp start",
-    "start": "gulp start"
+    "start": "gulp start",
+    "tdd": "DEBUG=app gulp tdd"
   },
   "author": "David Huebner",
   "license": "ISC",
