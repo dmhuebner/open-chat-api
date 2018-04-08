@@ -33,10 +33,16 @@ app.use(validator());
 require('./src/config/passport.js')(app);
 
 const User = require('./src/models/User');
+const Room = require('./src/models/Room');
+const Message = require('./src/models/Message');
 
 const authRouter = require('./src/routes/authRoutes')(User);
+const roomRouter = require('./src/routes/roomRoutes')(Room);
+const messageRouter = require('./src/routes/messageRoutes')(Message);
 
 app.use('/api/auth', authRouter);
+app.use('/api/rooms', roomRouter);
+app.use('/api/messages', messageRouter);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Open Chat API!')
