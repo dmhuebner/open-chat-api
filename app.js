@@ -38,11 +38,14 @@ const Message = require('./src/models/Message');
 
 const authRouter = require('./src/routes/authRoutes')(User);
 const roomRouter = require('./src/routes/roomRoutes')(Room);
-const messageRouter = require('./src/routes/messageRoutes')(Message);
+const messageRouter = require('./src/routes/messageRoutes')(Message, Room);
 
+// Main routes
 app.use('/api/auth', authRouter);
 app.use('/api/rooms', roomRouter);
-app.use('/api/messages', messageRouter);
+
+// Nested routes
+roomRouter.use('/:roomId/messages', messageRouter);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Open Chat API!')
