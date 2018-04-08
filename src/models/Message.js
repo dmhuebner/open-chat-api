@@ -4,7 +4,7 @@ const mongoose = require('mongoose'),
 const messageModel = new Schema({
   username: String,
   dateCreated: Date,
-  roomId: String,
+  roomId: {type: String, index: true},
   content: String,
   userId: String
 });

@@ -2,7 +2,7 @@ const debug = require('debug')('app:messageController');
 
 const messageController = (Message) => {
 
-  const getMessagesByRoomId = (req, res) => {
+  const get = (req, res) => {
     res.status(200).json(req.messages);
     debug(req.messages);
   };
@@ -32,7 +32,7 @@ const messageController = (Message) => {
   };
 
   return {
-    getMessagesByRoomId: getMessagesByRoomId,
+    get: get,
     post: post
   }
 };

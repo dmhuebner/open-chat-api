@@ -1,28 +1,36 @@
 const express = require('express');
 
-const routes = (Message) => {
-  const messageRouter = express.Router();
+const routes = (Message, Room) => {
+  const messageRouter = express.Router({mergeParams: true});
 
   const messageController = require('../controllers/messageController')(Message);
 
-  messageRouter.use('/:roomId', (req, res, next) => {
-    Message.find({roomId: req.params.roomId}, (error, messages) => {
+  messageRouter.use('/', (req, res, next) => {
+    const roomId = req.params.roomId;
+    Room.findById(roomId, (error, room) => {
       if (error) {
         res.status(500).send(error);
-      } else if (messages) {
-        req.messages = messages;
-        next();
-      } else {
+      } else if (!room) {
         res.status(404).send('No messages found for that roomId');
+      } else {
+        req.room = room;
+        Message.find({roomId: roomId}, (error, messages) => {
+          if (error) {
+            console.log();
+            res.status(500).send(error);
+          } else if (!messages) {
+            res.status(404).send('No messages found for that roomId');
+          } else {
+            req.messages = messages;
+            next();
+          }
+        });
       }
     });
   });
 
-  messageRouter.route('/:roomId')
-    .get(messageController.getMessagesByRoomId);
-
-  // TODO should be /:roomId/messages
   messageRouter.route('/')
+    .get(messageController.get)
     .post(messageController.post);
 
   return messageRouter;
