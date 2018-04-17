@@ -1,7 +1,9 @@
 const emailValidators = require('../validators/emailValidators'),
       debug = require('debug')('app:authController'),
       bcrypt = require('bcryptjs'),
-      passport = require('passport');
+      passport = require('passport'),
+      jwt = require('jsonwebtoken'),
+      jwtKey = require('../config/security')();
 
 const authController = (User) => {
 
@@ -33,13 +35,18 @@ const authController = (User) => {
       user.password = hash;
 
       function save() {
-        user.save((error) => {
+        user.save((error, savedUser) => {
           if (error) {
             res.status(400);
             res.send(error);
           } else {
-            res.status(201);
-            res.send('User was created successfully');
+            const token = jwt.sign({user: savedUser}, jwtKey);
+
+            res.status(201).send({
+              token: token,
+              message: 'User was created successfully'
+            });
+
             debug('User was created successfully');
           }
         });
@@ -50,7 +57,13 @@ const authController = (User) => {
   };
 
   const signIn = (req, res) => {
-      res.status(200).send(req.user);
+      const token = jwt.sign({user: req.user}, jwtKey);
+
+      res.status(200).send({
+        token: token,
+        user: req.user
+      });
+
       debug('login successful');
     };
 

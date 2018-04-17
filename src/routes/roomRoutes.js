@@ -1,9 +1,12 @@
-const express = require('express');
+const express = require('express'),
+      ensureToken = require('../authentication/authenticate');
 
 const routes = (Room) => {
   const roomRouter = express.Router();
 
   const roomController = require('../controllers/roomController')(Room);
+
+  roomRouter.use(ensureToken);
 
   roomRouter.route('/')
     .get(roomController.getAll)
@@ -21,6 +24,8 @@ const routes = (Room) => {
       }
     });
   });
+
+  roomRouter.use(ensureToken);
 
   roomRouter.route('/:roomId')
     .get(roomController.getByRoomId);
