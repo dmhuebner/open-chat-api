@@ -1,4 +1,5 @@
-const express = require('express');
+const express = require('express'),
+      ensureToken = require('../authentication/authenticate');
 
 const routes = (Message, Room) => {
   const messageRouter = express.Router({mergeParams: true});
@@ -28,6 +29,8 @@ const routes = (Message, Room) => {
       }
     });
   });
+
+  messageRouter.use(ensureToken);
 
   messageRouter.route('/')
     .get(messageController.get)
