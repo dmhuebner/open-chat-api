@@ -30,6 +30,12 @@ app.use(session({
 }));
 app.use(validator());
 
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:4200");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 require('./src/config/passport.js')(app);
 
 const User = require('./src/models/User');
