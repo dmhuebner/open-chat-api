@@ -59,10 +59,7 @@ const authController = (User) => {
   const signIn = (req, res) => {
       const token = jwt.sign({user: req.user}, jwtKey);
 
-      res.status(200).send({
-        token: token,
-        user: req.user
-      });
+      res.status(200).send({token: token});
 
       debug('login successful');
     };
