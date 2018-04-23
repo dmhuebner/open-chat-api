@@ -1,6 +1,7 @@
 const debug = require('debug')('app:roomController'),
       jwt = require('jsonwebtoken'),
-      jwtKey = require('../config/security')();
+      jwtConfig = require('../config/security')(),
+      jwtKey = jwtConfig.getJWTKey();
 
 const roomController = (Room) => {
 

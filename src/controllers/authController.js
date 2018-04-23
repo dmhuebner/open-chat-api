@@ -3,7 +3,9 @@ const emailValidators = require('../validators/emailValidators'),
       bcrypt = require('bcryptjs'),
       passport = require('passport'),
       jwt = require('jsonwebtoken'),
-      jwtKey = require('../config/security')();
+      jwtConfig = require('../config/security')(),
+      jwtKey = jwtConfig.getJWTKey(),
+      jwtOptions = jwtConfig.getJWTOptions();
 
 const authController = (User) => {
 
@@ -40,7 +42,7 @@ const authController = (User) => {
             res.status(400);
             res.send(error);
           } else {
-            const token = jwt.sign({user: savedUser}, jwtKey);
+            const token = jwt.sign({user: savedUser}, jwtKey, jwtOptions);
 
             res.status(201).send({
               token: token,
@@ -57,7 +59,7 @@ const authController = (User) => {
   };
 
   const signIn = (req, res) => {
-      const token = jwt.sign({user: req.user}, jwtKey);
+      const token = jwt.sign({user: req.user}, jwtKey, jwtOptions);
 
       res.status(200).send({token: token});
 
