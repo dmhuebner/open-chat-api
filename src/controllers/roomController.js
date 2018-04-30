@@ -8,6 +8,7 @@ const roomController = (Room) => {
   const getAll = (req, res) => {
     jwt.verify(req.token, jwtKey, (error, data) => {
       if (error) {
+        debug(error);
         res.sendStatus(403);
       } else {
         const query = {};
