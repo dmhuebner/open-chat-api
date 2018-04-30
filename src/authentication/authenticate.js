@@ -1,12 +1,16 @@
 function ensureToken(req, res, next) {
-  const bearerHeader = req.headers["authorization"];
-  if (bearerHeader) {
-    const bearer = bearerHeader.split(' ');
-    const bearerToken = bearer[1];
-    req.token = bearerToken;
-    next();
+  if (req.method !== 'OPTIONS') {
+    const bearerHeader = req.headers["authorization"];
+    if (bearerHeader) {
+      const bearer = bearerHeader.split(' ');
+      const bearerToken = bearer[1];
+      req.token = bearerToken;
+      next();
+    } else {
+      res.sendStatus(403);
+    }
   } else {
-    res.sendStatus(403);
+    next();
   }
 }
 
