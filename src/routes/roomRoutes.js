@@ -9,7 +9,7 @@ const routes = (Room) => {
   roomRouter.use(ensureToken);
 
   roomRouter.route('/')
-    .get(roomController.getAll)
+    .get(roomController.getRooms)
     .post(roomController.post);
 
   roomRouter.use('/:roomId', (req, res, next) => {
