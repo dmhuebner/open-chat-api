@@ -5,27 +5,6 @@ const debug = require('debug')('app:roomController'),
 
 const roomController = (Room) => {
 
-  const getAll = (req, res) => {
-    jwt.verify(req.token, jwtKey, (error, data) => {
-      if (error) {
-        debug(error);
-        res.sendStatus(403);
-      } else {
-        const query = {};
-
-        Room.find(query, (error, rooms) => {
-          if (error) {
-            res.status(500).send(error);
-            debug(error);
-          } else {
-            res.status(200).json(rooms);
-            debug(rooms);
-          }
-        });
-      }
-    });
-  };
-
   const post = (req, res) => {
     jwt.verify(req.token, jwtKey, (error, data) => {
       if (error) {
@@ -70,8 +49,63 @@ const roomController = (Room) => {
     });
   };
 
+  const getRooms = (req, res) => {
+    jwt.verify(req.token, jwtKey, (error, data) => {
+      if (error) {
+        debug(error);
+        res.sendStatus(403);
+      } else {
+        let query;
+
+        if (req.query.userId) {
+          query = {
+            userId: req.query.userId
+          }
+        }
+
+        if (query) {
+          getRoomsByUserId(req, res, query);
+        } else if (JSON.stringify(req.query) === '{}') {
+          getAll(req, res);
+        } else {
+          res.status(404).send('Invalid query string');
+        }
+      }
+    });
+  };
+
+  const getAll = (req, res) => {
+
+    Room.find((error, allRooms) => {
+      if (error) {
+        res.status(500).send(error);
+        debug(error);
+      } else {
+        res.status(200).json(allRooms);
+        debug(allRooms);
+      }
+    });
+  };
+
+  const getRoomsByUserId = (req, res, query) => {
+    Room.find({userIds: { $in: [query.userId] }}, (error, rooms) => {
+      if (error) {
+        res.status(500).send(error);
+        debug(error);
+      } else {
+        if (rooms.length) {
+          res.status(200).json(rooms);
+          debug(rooms);
+        } else {
+          res.status(404).send('No rooms found');
+          debug({status: 404, message: 'No rooms found'});
+        }
+      }
+    });
+  };
+
   return {
-    getAll: getAll,
+    getRooms: getRooms,
     post: post,
     getByRoomId: getByRoomId
   }
