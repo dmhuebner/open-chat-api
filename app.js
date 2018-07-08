@@ -7,7 +7,9 @@ const express = require('express'),
       passport = require('passport'),
       cookieParser = require('cookie-parser'),
       session = require('express-session'),
-      validator = require('express-validator');
+      validator = require('express-validator'),
+      http = require('http'),
+      commonEventEmitter = require('./src/services/eventEmitter');
 
 let db;
 if (process.env.ENV === 'unit-test') {
@@ -17,8 +19,10 @@ if (process.env.ENV === 'unit-test') {
 }
 
 const app = express(),
-      port = process.env.PORT || 3000;
+      port = process.env.PORT || 3000,
+      server = http.Server(app);
 
+// Middleware
 app.use(logger('combined'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -33,6 +37,7 @@ app.use(validator());
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:4200");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Authorization, Accept");
+  res.header("Access-Control-Allow-Credentials", 'true');
   next();
 });
 
@@ -57,7 +62,19 @@ app.get('/', (req, res) => {
   res.send('Welcome to the Open Chat API!')
 });
 
-app.listen(port, () => {
+// Socket IO events
+const socketIo = require('socket.io');
+const io = socketIo(server);
+
+io.on('connection', function(socket) {
+  debug(chalk.green('Client connected to the socket'));
+
+  commonEventEmitter.on('new-message', (newRoomMessage) => {
+    socket.emit('new-room-message', newRoomMessage);
+  });
+});
+
+server.listen(port, () => {
   debug(`Open Chat API is running on PORT: ${chalk.green(port)}`);
 });
 

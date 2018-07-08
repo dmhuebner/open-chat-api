@@ -1,7 +1,8 @@
 const debug = require('debug')('app:messageController'),
       jwt = require('jsonwebtoken'),
       jwtConfig = require('../config/security')(),
-      jwtKey = jwtConfig.getJWTKey();
+      jwtKey = jwtConfig.getJWTKey(),
+      commonEventEmitter = require('../services/eventEmitter');
 
 const messageController = (Message) => {
 
@@ -36,6 +37,7 @@ const messageController = (Message) => {
               res.send(error);
             } else {
               res.status(201);
+              commonEventEmitter.emit('new-message', message);
               res.send({message: 'Message was created successfully', response: {messageId: message._id}});
               debug(message);
               debug('Status 201: Message was created successfully');
