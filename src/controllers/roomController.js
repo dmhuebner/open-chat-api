@@ -3,7 +3,7 @@ const debug = require('debug')('app:roomController'),
       jwtConfig = require('../config/security')(),
       jwtKey = jwtConfig.getJWTKey();
 
-const roomController = (Room) => {
+const roomController = (Room, User) => {
 
   const post = (req, res) => {
     jwt.verify(req.token, jwtKey, (error, data) => {
@@ -104,10 +104,56 @@ const roomController = (Room) => {
     });
   };
 
+  const addUserToRoom = (req, res) => {
+    jwt.verify(req.token, jwtKey, (error, data) => {
+      if (error) {
+        res.sendStatus(403);
+      } else {
+        User.findOne({email: req.body.userEmail}).exec().then((foundUser) => {
+          if (foundUser) {
+            Room.findOne({_id: req.params.roomId}, (error, room) => {
+              if (error) {
+                res.status(500).send(error);
+                debug(error);
+              } else {
+                if (room) {
+                  const userAlreadyInRoom = room.userIds.indexOf(foundUser._id) !== -1;
+
+                  if (!userAlreadyInRoom) {
+                    room.userIds.push(foundUser._id);
+                    room.save((error, savedRoom) => {
+                      if (error) {
+                        res.status(500).send(error);
+                        debug(error);
+                      } else {
+                        res.status(200).json(savedRoom);
+                        debug(savedRoom);
+                      }
+                    });
+                  } else {
+                    res.status(400).send(`That user is already in ${room.roomName}`);
+                    debug({status: 400, message: `That user is already in ${room.roomName}`});
+                  }
+                } else {
+                  res.status(404).send('No room found');
+                  debug({status: 404, message: 'No room found'});
+                }
+              }
+            });
+          } else {
+            res.status(404).send('No user found with that email');
+            debug({status: 404, message: 'No user found with that email'});
+          }
+        });
+      }
+    });
+  };
+
   return {
     getRooms: getRooms,
     post: post,
-    getByRoomId: getByRoomId
+    getByRoomId: getByRoomId,
+    addUserToRoom: addUserToRoom
   }
 };
 

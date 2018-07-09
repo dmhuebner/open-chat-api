@@ -1,10 +1,10 @@
 const express = require('express'),
       ensureToken = require('../authentication/authenticate');
 
-const routes = (Room) => {
+const routes = (Room, User) => {
   const roomRouter = express.Router();
 
-  const roomController = require('../controllers/roomController')(Room);
+  const roomController = require('../controllers/roomController')(Room, User);
 
   roomRouter.use(ensureToken);
 
@@ -28,7 +28,8 @@ const routes = (Room) => {
   roomRouter.use(ensureToken);
 
   roomRouter.route('/:roomId')
-    .get(roomController.getByRoomId);
+    .get(roomController.getByRoomId)
+    .put(roomController.addUserToRoom);
 
   return roomRouter;
 };

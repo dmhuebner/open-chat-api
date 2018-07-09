@@ -48,7 +48,7 @@ const Room = require('./src/models/Room');
 const Message = require('./src/models/Message');
 
 const authRouter = require('./src/routes/authRoutes')(User);
-const roomRouter = require('./src/routes/roomRoutes')(Room);
+const roomRouter = require('./src/routes/roomRoutes')(Room, User);
 const messageRouter = require('./src/routes/messageRoutes')(Message, Room);
 
 // Main routes
